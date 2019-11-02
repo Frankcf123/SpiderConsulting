@@ -14,7 +14,7 @@ class MckinseySpider(scrapy.Spider):
         allowed_domains = ['www.mckinsey.com']
         self.url = ("https://www.mckinsey.com/services/ContentAPI/SearchAPI.svc/search")
         # url="https://www.mckinsey.com/business-functions/mckinsey-analytics/our-insights?UseAjax=true&PresentationId={225AFD08-2381-4FCD-B73F-F68A6859B4FC}&ds={E30B533C-7F08-4172-8780-F4CF9F3B832F}&showfulldek=False&hideeyebrows=False&ig_page=20"
-        frmdata={"q":"artificial%20intelligence","page":"1","app":"","sort":"default"}
+        frmdata={"q":"artificial%20intelligence","page":"60","app":"","sort":"default"}
 
         self.conn = pymysql.connect(host=self.settings.get('DB_HOST'),
                                     user=self.settings.get('DB_USER'),
@@ -27,7 +27,7 @@ class MckinseySpider(scrapy.Spider):
         yield scrapy.http.JsonRequest(url=self.url, data=frmdata)
 
     def parse(self, response):
-        print(response.body)
+        # print(response.body)
         data=json.loads(response.body).get('data')
         totalResults=data.get("totalResults")
         totalPages=data.get("totalPages")
@@ -38,7 +38,7 @@ class MckinseySpider(scrapy.Spider):
             ar_title=str(result.get('title'))
             ar_url=str(result.get('url'))
             ar_tags=str(result.get('tag'))
-            if "Video" in ar_tags or "Podcast" in ar_tags or ar_tags=="":
+            if ("Video" in ar_tags) or ("Podcast" in ar_tags) or ar_tags=="" or ("Insurance Claims" in ar_tags) or ("Public Sector" in ar_tags ) or ("Interactive" in ar_tags):
                 pass
             else:
                 ar_date=ar_tags.split()[-1]
@@ -62,10 +62,10 @@ class MckinseySpider(scrapy.Spider):
     def parse_article(self,response):
         title=response.meta["ar_title"]
         ar_author = response.xpath('//div[@class="author-by-line"]').get()
-        ar_content = response.xpath('//article[@class="main-copy text-longform main"]').get()
+        ar_content = response.xpath('//article').get()
         ar_content_str=str(ar_content)
         cleantext_content = re.sub(re.compile('<.*?>'), '', ar_content_str)
-        cleantext_author= re.sub(re.compile('<.*?>'), '', ar_author)
+        cleantext_author= re.sub(re.compile('<.*?>'), '', str(ar_author))
         try:
              self.conn.cursor().execute( 'UPDATE article SET ar_author=%s, ar_content=%s where ar_title=%s',
              (cleantext_author,cleantext_content,title))
