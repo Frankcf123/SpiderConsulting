@@ -19,7 +19,7 @@ NEWSPIDER_MODULE = 'thesisdata.spiders'
 #USER_AGENT = 'thesisdata (+http://www.yourdomain.com)'
 
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = True
+ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
@@ -94,3 +94,6 @@ USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36
 DB_HOST = 'localhost'
 DB_USER = 'root'
 DB_PASSWORD = ''
+
+USER_AGENT='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36'
+HTTPERROR_ALLOWED_CODES = [400,405]
