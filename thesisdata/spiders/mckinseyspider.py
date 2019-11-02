@@ -38,20 +38,17 @@ class MckinseySpider(scrapy.Spider):
             ar_title=str(result.get('title'))
             ar_url=str(result.get('url'))
             ar_tags=str(result.get('tag'))
-            if "Video" in ar_tags or "Podcast" in ar_tags:
+            if "Video" in ar_tags or "Podcast" in ar_tags or ar_tags=="":
                 pass
             else:
-                if ar_tags:
-                    ar_date=ar_tags.split()[-1]
-                else:
-                    ar_date=""
+                ar_date=ar_tags.split()[-1]
                 try:
                     self.conn.cursor().execute(
                         'INSERT INTO article (ar_title,ar_url,ar_date,ar_company)'
                         'values (%s, %s, %s, %s)',(ar_title,ar_url,ar_date,"mckinsey"))
                     self.conn.commit()
                     request = scrapy.Request(url=ar_url,callback=self.parse_article,meta={"ar_title":ar_title})
-                    # yield request                    
+                    yield request                    
                 except Exception as e:
                     print('Bain major error')
                     print(e)
