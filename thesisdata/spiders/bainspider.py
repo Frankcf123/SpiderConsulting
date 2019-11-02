@@ -2,6 +2,8 @@ import scrapy
 import json
 import pymysql
 import collections
+import re
+
 pymysql.install_as_MySQLdb()
 
 
@@ -36,28 +38,32 @@ class BainSpider(scrapy.Spider):
             ar_url="https://www.bain.com"+str(result.get('url'))
             ar_type=str(result.get('type'))
             ar_date=str(result.get('date')).split(',')[-1]
-       
-            # request = scrapy.Request(
-            #     url=ar_url,
-            #     callback=self.parse_article,
-            #     )
-            c = self.conn.cursor()
-           # Update Job detail info
-           
             try:
                 self.conn.cursor().execute(
                     'INSERT INTO article (ar_title,ar_url,ar_type,ar_date,ar_company)'
-                    'values (%s, %s, %s, %s, %s)',(ar_title,ar_url,ar_type,ar_date,Bain))
+                    'values (%s, %s, %s, %s, %s)',(ar_title,ar_url,ar_type,ar_date,"Bain"))
                 self.conn.commit()
-
+                request = scrapy.Request(url=ar_url,callback=self.parse_article,meta={"ar_title":ar_title})
+                yield request                    
             except Exception as e:
-                print('JOB MEET ERROR')
+                print('Bain major error')
                 print(e)
-            
-            print("Success")
-
+           
     
     def parse_article(self,response):
-        ar_author = response.xpath('//*[@class="hero__byline"]/p/text()').extract()
-        ar_content = response.xpath('//*[@class="rte rte--show-end-of-content rte__heading"]/div/text()').extract()
+        title=response.meta["ar_title"]
+        ar_author = response.xpath('//p[@class="hero__byline"]/text()').get()
+        ar_content = response.xpath('//div[@class="rte rte--show-end-of-content rte__heading"]').get()
+        ar_content_str=str(ar_content)
+        cleantext = re.sub(re.compile('<.*?>'), '', ar_content_str)
+        try:
+             self.conn.cursor().execute( 'UPDATE article SET ar_author=%s, ar_content=%s where ar_title=%s',
+             (ar_author,cleantext,title))
+             self.conn.commit()
+                
+        except Exception as e:
+            print('Bain content error')
+            print(e)
 
+
+    
