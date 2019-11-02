@@ -91,6 +91,6 @@ ROBOTSTXT_OBEY = True
 
 
 USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36'
-DB_HOST = 'db'
+DB_HOST = 'localhost'
 DB_USER = 'root'
-DB_PASSWORD = 'qwerty1'
+DB_PASSWORD = ''
