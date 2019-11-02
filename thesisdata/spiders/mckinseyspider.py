@@ -8,11 +8,11 @@ pymysql.install_as_MySQLdb()
 
 
 
-class BainSpider(scrapy.Spider):
-    name = "bain"
+class MckinseySpider(scrapy.Spider):
+    name = "mckinsey"
 
     def start_requests(self):
-        allowed_domains = ['www.bain.com']
+        allowed_domains = ['www.mckinsey.com']
         url = (
             'https://www.bain.com/en/api/search/keyword/get?'
             'start=0&results=500&filters=|types(422,426,427,428,430)'
